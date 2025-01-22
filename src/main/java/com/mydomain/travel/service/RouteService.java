@@ -1,34 +1,45 @@
 package com.mydomain.travel.service;
 
-import com.mydomain.travel.model.Route;
-import com.mydomain.travel.repository.RouteRepository;
-import liquibase.repackaged.org.apache.commons.collections4.IteratorUtils;
-import lombok.*;
+import com.mydomain.travel.dto.RouteDTO;
+import com.mydomain.travel.mapper.RouteDTOMapper;
+import com.mydomain.travel.persistent.model.Route;
+import com.mydomain.travel.persistent.repository.RouteRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
 public class RouteService {
 
     private final RouteRepository routeRepository;
+    private final RouteDTOMapper mapper;
 
-    public Route save(Route route) {
-        return routeRepository.save(route);
+    public RouteService(RouteRepository routeRepository, RouteDTOMapper mapper) {
+        this.routeRepository = routeRepository;
+        this.mapper = mapper;
     }
 
-    public Optional<Route> findById(UUID id) {
-        return routeRepository.findById(id);
+    public RouteDTO save(Route route) {
+        return mapper.ToDto(routeRepository.save(route));
     }
 
+    public Optional<RouteDTO> findById(UUID id) {
+        return routeRepository.findById(id).map(mapper::ToDto);
+    }
+
+    @Transactional
     public boolean update(UUID id, Route newRoute) {
         return routeRepository.findById(id)
                 .map(route-> {
-                    newRoute.setId(route.getId());
-                    routeRepository.save(newRoute);
+                    route.setData(newRoute.getData());
+                    route.setPointA(newRoute.getPointA());
+                    route.setPointB(newRoute.getPointB());
+                    route.setTravelTime(newRoute.getTravelTime());
+                    routeRepository.save(route);
                     return true;
                 })
                 .orElse(false);
@@ -43,8 +54,10 @@ public class RouteService {
                 .orElse(false);
     }
 
-    public List<Route> findAll() {
-        var iterator = routeRepository.findAll().iterator();
-        return IteratorUtils.toList(iterator);
+    public List<RouteDTO> findAll() {
+        return routeRepository.findAll()
+                .stream()
+                .map(mapper::ToDto)
+                .collect(Collectors.toList());
     }
 }
