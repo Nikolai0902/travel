@@ -32,9 +32,10 @@ public class RouteService {
     }
 
     @Transactional
-    public boolean update(UUID id, Route newRoute) {
-        return routeRepository.findById(id)
-                .map(route-> {
+    public boolean update(Route newRoute) {
+        return Optional.ofNullable(newRoute.getId())
+                .flatMap(routeRepository::findById)
+                .map(route -> {
                     route.setData(newRoute.getData());
                     route.setPointA(newRoute.getPointA());
                     route.setPointB(newRoute.getPointB());

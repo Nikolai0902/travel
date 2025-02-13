@@ -38,9 +38,9 @@ public class RouteController {
                 () -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> update(@RequestBody UUID id, @RequestBody Route updatedRoute) {
-        boolean updated = routeService.update(id, updatedRoute);
+    @PutMapping
+    public ResponseEntity<?> update(@RequestBody Route updatedRoute) {
+        boolean updated = routeService.update(updatedRoute);
         return updated ? new ResponseEntity<>(HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
