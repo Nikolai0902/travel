@@ -30,9 +30,9 @@ public class RestTemplateController {
         return restTemplate.getForEntity(url + "/" + id, RouteDTO.class);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable UUID id, @RequestBody Route updatedRoute) {
-        restTemplate.put(url + "/" + id, updatedRoute);
+    @PutMapping
+    public ResponseEntity<?> update(@RequestBody Route updatedRoute) {
+        restTemplate.put(url, updatedRoute);
         return ResponseEntity.ok().build();
     }
 
